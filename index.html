@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERPEEL336 - Platform Game Virtual</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="screen active">
+        <div class="login-container">
+            <div class="logo-section">
+                <h1 class="logo">💰 ERPEEL336</h1>
+                <p class="tagline">Platform Game Virtual Terbaik</p>
+            </div>
+            
+            <div class="auth-tabs">
+                <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+                <button class="tab-btn" onclick="switchTab('register')">Register</button>
+            </div>
+            
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form active">
+                <div class="form-group">
+                    <label>Username atau Email</label>
+                    <input type="text" id="loginUsername" placeholder="Masukkan username/email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Masukkan password" required>
+                </div>
+                <button type="submit" class="btn-primary">Masuk</button>
+            </form>
+            
+            <!-- Register Form -->
+            <form id="registerForm" class="auth-form">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="regUsername" placeholder="Pilih username" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" placeholder="email@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="regPassword" placeholder="Minimal 6 karakter" required>
+                </div>
+                <button type="submit" class="btn-primary">Daftar</button>
+            </form>
+            
+            <div class="demo-accounts">
+                <h4>🎮 Akun Demo (Klik untuk login cepat)</h4>
+                <div class="demo-grid">
+                    <button class="demo-btn member" onclick="quickLogin('member')">
+                        <span class="role-badge member">👤 MEMBER</span>
+                        <small>member / 123456</small>
+                    </button>
+                    <button class="demo-btn vip" onclick="quickLogin('vip')">
+                        <span class="role-badge vip">⭐ VIP</span>
+                        <small>vip / 123456</small>
+                    </button>
+                    <button class="demo-btn staff" onclick="quickLogin('staff')">
+                        <span class="role-badge staff">🛡️ STAFF</span>
+                        <small>staff / 123456</small>
+                    </button>
+                    <button class="demo-btn admin" onclick="quickLogin('admin')">
+                        <span class="role-badge admin">👑 ADMIN</span>
+                        <small>admin / 123456</small>
+                    </button>
+                    <button class="demo-btn developer" onclick="quickLogin('developer')">
+                        <span class="role-badge developer">💻 DEVELOPER</span>
+                        <small>developer / 123456</small>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboardScreen" class="screen">
+        <!-- Header -->
+        <header class="main-header">
+            <div class="header-left">
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+                <h2 class="logo">💰 RupiahPlay</h2>
+            </div>
+            <div class="header-center">
+                <div class="balance-display">
+                    <span class="balance-label">Saldo:</span>
+                    <span class="balance-amount" id="userBalance">Rp 100.000</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="btn-deposit" onclick="openDepositModal()">💳 Deposit</button>
+                <button class="btn-claim" onclick="claimDaily()">🎁 Klaim</button>
+                <button class="btn-reset" onclick="resetBalance()">🔄 Reset</button>
+                <div class="user-menu">
+                    <div class="user-info">
+                        <span id="userName">User</span>
+                        <span class="role-badge" id="userRole">MEMBER</span>
+                    </div>
+                    <button class="btn-logout" onclick="logout()">Keluar</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="main-nav" id="mainNav">
+            <button class="nav-btn active" onclick="showSection('lobby')">🏠 Lobby</button>
+            <button class="nav-btn" onclick="showSection('slots')">🎰 Slots</button>
+            <button class="nav-btn" onclick="showSection('table')">🎲 Table</button>
+            <button class="nav-btn" onclick="showSection('arcade')">🎮 Arcade</button>
+            <button class="nav-btn" onclick="showSection('history')">📊 Riwayat</button>
+            <button class="nav-btn" onclick="showSection('leaderboard')">🏆 Top</button>
+            <button class="nav-btn admin-only" onclick="showSection('admin')" style="display: none;">⚙️ Admin</button>
+        </nav>
+
+        <!-- Lobby Section -->
+        <section id="lobbySection" class="content-section active">
+            <div class="banner-slider">
+                <div class="banner">
+                    <h2>🚀 Spaceman Crash - Terbang ke Luar Angkasa!</h2>
+                    <p>Multiplier hingga 100x! Cash out sebelum roket meledak</p>
+                </div>
+            </div>
+
+            <div class="role-benefits" id="roleBenefits">
+                <!-- Will be populated by JS based on role -->
+            </div>
+
+            <div class="game-categories">
+                <h3>🔥 Game Populer</h3>
+                <div class="game-grid">
+                    <div class="game-card" onclick="openGame('crash')">
+                        <div class="game-icon">🚀</div>
+                        <h4>Spaceman Crash</h4>
+                        <p>Multiplier hingga 100x</p>
+                    </div>
+                    <div class="game-card" onclick="openGame('fish')">
+                        <div class="game-icon">🎣</div>
+                        <h4>Fish Shooting</h4>
+                        <p>Tembak ikan dapat hadiah</p>
+                    </div>
+                    <div class="game-card" onclick="openGame('slot')">
+                        <div class="game-icon">🎰</div>
+                        <h4>Mega Slot</h4>
+                        <p>Jackpot besar menanti</p>
+                    </div>
+                    <div class="game-card" onclick="openGame('roulette')">
+                        <div class="game-icon">🎡</div>
+                        <h4>Roulette</h4>
+                        <p>Klasik & menguntungkan</p>
+                    </div>
+                    <div class="game-card" onclick="openGame('blackjack')">
+                        <div class="game-icon">🃏</div>
+                        <h4>Blackjack</h4>
+                        <p>Lawan dealer AI</p>
+                    </div>
+                    <div class="game-card" onclick="openGame('wheel')">
+                        <div class="game-icon">🎯</div>
+                        <h4>Lucky Wheel</h4>
+                        <p>Putar & menang</p>
+                    </div>
+                    <div class="game-card" onclick="openGame('scratch')">
+                        <div class="game-icon">🎫</div>
+                        <h4>Scratch Card</h4>
+                        <p>Gosok & menangkan</p>
+                    </div>
+                    <div class="game-card" onclick="openGame('dice')">
+                        <div class="game-icon">🎲</div>
+                        <h4>Dice Roll</h4>
+                        <p>Tebak angka dadu</p>
+                    </div>
+                    <div class="game-card" onclick="openGame('mahjong')">
+                        <div class="game-icon">🀄</div>
+                        <h4>Mahjong Ways</h4>
+                        <p>Match tiles & menang</p>
+                    </div>
+                    <div class="game-card" onclick="openGame('sicbo')">
+                        <div class="game-icon">🎲</div>
+                        <h4>Sic Bo</h4>
+                        <p>3 dadu, banyak taruhan</p>
+                    </div>
+                    <div class="game-card" onclick="openGame('poker')">
+                        <div class="game-icon">🃏</div>
+                        <h4>Video Poker</h4>
+                        <p>Kombinasi kartu menang</p>
+                    </div>
+                    <div class="game-card" onclick="openGame('mines')">
+                        <div class="game-icon">💣</div>
+                        <h4>Mines</h4>
+                        <p>Hindari bom, menang besar</p>
+                    </div>
+                    <div class="game-card" onclick="openGame('plinko')">
+                        <div class="game-icon">🎯</div>
+                        <h4>Plinko</h4>
+                        <p>Bola jatuh, multiplier</p>
+                    </div>
+                    <div class="game-card" onclick="openGame('coinflip')">
+                        <div class="game-icon">🪙</div>
+                        <h4>Coin Flip</h4>
+                        <p>Head atau Tail?</p>
+                    </div>
+                    <div class="game-card" onclick="openGame('billiard')">
+                        <div class="game-icon">🎱</div>
+                        <h4>Billiard 8-Ball</h4>
+                        <p>Masukkan bola ke lubang</p>
+                    </div>
+                    <div class="game-card" onclick="openGame('texasholdem')">
+                        <div class="game-icon">🃏</div>
+                        <h4>Texas Hold'em</h4>
+                        <p>Poker vs AI</p>
+                    </div>
+                    <div class="game-card" onclick="openGame('togel')">
+                        <div class="game-icon">🎰</div>
+                        <h4>Togel 4D</h4>
+                        <p>Tebak angka 4D/3D/2D</p>
+                    </div>
+                    <div class="game-card" onclick="openGame('sportbet')">
+                        <div class="game-icon">🎮</div>
+                        <h4>MPL ID Betting</h4>
+                        <p>BO3 & BO5 Matches</p>
+                    </div>
+                    <div class="game-card" onclick="openGame('baccarat')">
+                        <div class="game-icon">🎴</div>
+                        <h4>Baccarat</h4>
+                        <p>Player vs Banker</p>
+                    </div>
+                    <div class="game-card" onclick="openGame('craps')">
+                        <div class="game-icon">🎲</div>
+                        <h4>Craps</h4>
+                        <p>Dice betting classic</p>
+                    </div>
+                    <div class="game-card" onclick="openGame('darts')">
+                        <div class="game-icon">🎯</div>
+                        <h4>Darts</h4>
+                        <p>Hit the bullseye!</p>
+                    </div>
+                    <div class="game-card" onclick="openGame('fortune')">
+                        <div class="game-icon">🎪</div>
+                        <h4>Wheel of Fortune</h4>
+                        <p>Spin the big wheel</p>
+                    </div>
+                    <div class="game-card" onclick="openGame('bingo')">
+                        <div class="game-icon">🎱</div>
+                        <h4>Bingo</h4>
+                        <p>Match the numbers</p>
+                    </div>
+                    <div class="game-card" onclick="openGame('keno')">
+                        <div class="game-icon">🎰</div>
+                        <h4>Keno</h4>
+                        <p>Pick lucky numbers</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slots Section -->
+        <section id="slotsSection" class="content-section">
+            <h3>🎰 Slot Machines</h3>
+            <div class="game-grid">
+                <div class="game-card" onclick="openGame('slot')">
+                    <div class="game-icon">🎰</div>
+                    <h4>Classic Slot</h4>
+                </div>
+                <div class="game-card" onclick="openGame('slot')">
+                    <div class="game-icon">💎</div>
+                    <h4>Diamond Slot</h4>
+                </div>
+                <div class="game-card" onclick="openGame('slot')">
+                    <div class="game-icon">🍀</div>
+                    <h4>Lucky Slot</h4>
+                </div>
+            </div>
+        </section>
+
+        <!-- Table Games Section -->
+        <section id="tableSection" class="content-section">
+            <h3>🎲 Table Games</h3>
+            <div class="game-grid">
+                <div class="game-card" onclick="openGame('roulette')">
+                    <div class="game-icon">🎡</div>
+                    <h4>Roulette</h4>
+                </div>
+                <div class="game-card" onclick="openGame('blackjack')">
+                    <div class="game-icon">🃏</div>
+                    <h4>Blackjack</h4>
+                </div>
+                <div class="game-card" onclick="openGame('dice')">
+                    <div class="game-icon">🎲</div>
+                    <h4>Dice Game</h4>
+                </div>
+            </div>
+        </section>
+
+        <!-- Arcade Section -->
+        <section id="arcadeSection" class="content-section">
+            <h3>🎮 Arcade Games</h3>
+            <div class="game-grid">
+                <div class="game-card" onclick="openGame('crash')">
+                    <div class="game-icon">🚀</div>
+                    <h4>Spaceman Crash</h4>
+                </div>
+                <div class="game-card" onclick="openGame('fish')">
+                    <div class="game-icon">🎣</div>
+                    <h4>Fish Shooting</h4>
+                </div>
+                <div class="game-card" onclick="openGame('wheel')">
+                    <div class="game-icon">🎯</div>
+                    <h4>Lucky Wheel</h4>
+                </div>
+                <div class="game-card" onclick="openGame('scratch')">
+                    <div class="game-icon">🎫</div>
+                    <h4>Scratch Card</h4>
+                </div>
+            </div>
+        </section>
+
+        <!-- History Section -->
+        <section id="historySection" class="content-section">
+            <h3>📊 Riwayat Permainan</h3>
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <h4>Total Permainan</h4>
+                    <p class="stat-value" id="totalGames">0</p>
+                </div>
+                <div class="stat-card">
+                    <h4>Total Menang</h4>
+                    <p class="stat-value green" id="totalWins">Rp 0</p>
+                </div>
+                <div class="stat-card">
+                    <h4>Total Kalah</h4>
+                    <p class="stat-value red" id="totalLosses">Rp 0</p>
+                </div>
+            </div>
+            <div class="history-list" id="historyList">
+                <p class="empty-state">Belum ada riwayat permainan</p>
+            </div>
+        </section>
+
+        <!-- Leaderboard Section -->
+        <section id="leaderboardSection" class="content-section">
+            <h3>🏆 Leaderboard</h3>
+            <div class="leaderboard-tabs">
+                <button class="tab-btn active">Harian</button>
+                <button class="tab-btn">Mingguan</button>
+            </div>
+            <div class="leaderboard-list" id="leaderboardList">
+                <!-- Will be populated by JS -->
+            </div>
+        </section>
+
+        <!-- Admin Panel Section -->
+        <section id="adminSection" class="content-section">
+            <h3>⚙️ Admin Panel</h3>
+            <div class="admin-panel">
+                <div class="admin-card">
+                    <h4>👥 Total Users</h4>
+                    <p class="admin-stat" id="totalUsers">0</p>
+                </div>
+                <div class="admin-card">
+                    <h4>💰 Total Saldo Sistem</h4>
+                    <p class="admin-stat" id="totalSystemBalance">Rp 0</p>
+                </div>
+                <div class="admin-card">
+                    <h4>🎮 Total Games Played</h4>
+                    <p class="admin-stat" id="totalGamesPlayed">0</p>
+                </div>
+            </div>
+            
+            <div class="admin-users">
+                <h4>Daftar User</h4>
+                <div id="adminUserList"></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Game Modal -->
+    <div id="gameModal" class="modal">
+        <div class="modal-content game-modal-content">
+            <button class="close-btn" onclick="closeGame()">✕</button>
+            <div id="gameContainer"></div>
+        </div>
+    </div>
+
+    <!-- Deposit Modal -->
+    <div id="depositModal" class="modal">
+        <div class="modal-content deposit-modal-content">
+            <button class="close-btn" onclick="closeDepositModal()">✕</button>
+            <div id="depositContainer">
+                <div class="deposit-header">
+                    <h2 class="deposit-title">💳 Deposit Saldo</h2>
+                    <p class="deposit-subtitle">Pilih metode pembayaran dan jumlah deposit</p>
+                    <div class="deposit-notice">
+                        ⚠️ <strong>SIMULASI:</strong> Ini deposit virtual gratis untuk hiburan saja
+                    </div>
+                </div>
+
+                <!-- Amount Selection -->
+                <div class="deposit-section">
+                    <h3>💰 Pilih Nominal</h3>
+                    <div class="amount-grid">
+                        <button class="amount-btn" onclick="selectAmount(50000)">
+                            <div class="amount-value">Rp 50.000</div>
+                            <div class="amount-label">Starter</div>
+                        </button>
+                        <button class="amount-btn" onclick="selectAmount(100000)">
+                            <div class="amount-value">Rp 100.000</div>
+                            <div class="amount-label">Popular</div>
+                        </button>
+                        <button class="amount-btn" onclick="selectAmount(250000)">
+                            <div class="amount-value">Rp 250.000</div>
+                            <div class="amount-label">Best Value</div>
+                        </button>
+                        <button class="amount-btn" onclick="selectAmount(500000)">
+                            <div class="amount-value">Rp 500.000</div>
+                            <div class="amount-label">VIP</div>
+                        </button>
+                        <button class="amount-btn" onclick="selectAmount(1000000)">
+                            <div class="amount-value">Rp 1.000.000</div>
+                            <div class="amount-label">Premium</div>
+                        </button>
+                        <button class="amount-btn" onclick="selectAmount(5000000)">
+                            <div class="amount-value">Rp 5.000.000</div>
+                            <div class="amount-label">Mega</div>
+                        </button>
+                    </div>
+                    
+                    <div class="custom-amount">
+                        <label>Atau masukkan nominal custom:</label>
+                        <input type="number" id="customAmount" class="amount-input" placeholder="Masukkan jumlah" min="10000" step="10000">
+                    </div>
+                </div>
+
+                <!-- Payment Method Selection -->
+                <div class="deposit-section">
+                    <h3>💳 Pilih Metode Pembayaran</h3>
+                    <div class="payment-methods">
+                        <!-- E-Wallet -->
+                        <div class="payment-category">
+                            <h4>📱 E-Wallet</h4>
+                            <div class="payment-grid">
+                                <button class="payment-btn" onclick="selectPayment('gopay')">
+                                    <div class="payment-icon">🟢</div>
+                                    <div class="payment-name">GoPay</div>
+                                </button>
+                                <button class="payment-btn" onclick="selectPayment('ovo')">
+                                    <div class="payment-icon">🟣</div>
+                                    <div class="payment-name">OVO</div>
+                                </button>
+                                <button class="payment-btn" onclick="selectPayment('dana')">
+                                    <div class="payment-icon">🔵</div>
+                                    <div class="payment-name">DANA</div>
+                                </button>
+                                <button class="payment-btn" onclick="selectPayment('shopeepay')">
+                                    <div class="payment-icon">🟠</div>
+                                    <div class="payment-name">ShopeePay</div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Bank Transfer -->
+                        <div class="payment-category">
+                            <h4>🏦 Transfer Bank</h4>
+                            <div class="payment-grid">
+                                <button class="payment-btn" onclick="selectPayment('bca')">
+                                    <div class="payment-icon">🔵</div>
+                                    <div class="payment-name">BCA</div>
+                                </button>
+                                <button class="payment-btn" onclick="selectPayment('mandiri')">
+                                    <div class="payment-icon">🟡</div>
+                                    <div class="payment-name">Mandiri</div>
+                                </button>
+                                <button class="payment-btn" onclick="selectPayment('bni')">
+                                    <div class="payment-icon">🟠</div>
+                                    <div class="payment-name">BNI</div>
+                                </button>
+                                <button class="payment-btn" onclick="selectPayment('bri')">
+                                    <div class="payment-icon">🔵</div>
+                                    <div class="payment-name">BRI</div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Virtual Account -->
+                        <div class="payment-category">
+                            <h4>🏧 Virtual Account</h4>
+                            <div class="payment-grid">
+                                <button class="payment-btn" onclick="selectPayment('va-bca')">
+                                    <div class="payment-icon">💳</div>
+                                    <div class="payment-name">VA BCA</div>
+                                </button>
+                                <button class="payment-btn" onclick="selectPayment('va-mandiri')">
+                                    <div class="payment-icon">💳</div>
+                                    <div class="payment-name">VA Mandiri</div>
+                                </button>
+                                <button class="payment-btn" onclick="selectPayment('va-bni')">
+                                    <div class="payment-icon">💳</div>
+                                    <div class="payment-name">VA BNI</div>
+                                </button>
+                                <button class="payment-btn" onclick="selectPayment('va-permata')">
+                                    <div class="payment-icon">💳</div>
+                                    <div class="payment-name">VA Permata</div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Retail -->
+                        <div class="payment-category">
+                            <h4>🏪 Retail</h4>
+                            <div class="payment-grid">
+                                <button class="payment-btn" onclick="selectPayment('alfamart')">
+                                    <div class="payment-icon">🔴</div>
+                                    <div class="payment-name">Alfamart</div>
+                                </button>
+                                <button class="payment-btn" onclick="selectPayment('indomaret')">
+                                    <div class="payment-icon">🟡</div>
+                                    <div class="payment-name">Indomaret</div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- QRIS -->
+                        <div class="payment-category">
+                            <h4>📲 QRIS</h4>
+                            <div class="payment-grid">
+                                <button class="payment-btn" onclick="selectPayment('qris')">
+                                    <div class="payment-icon">⚡</div>
+                                    <div class="payment-name">QRIS</div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary -->
+                <div class="deposit-summary">
+                    <div class="summary-row">
+                        <span>Nominal Deposit:</span>
+                        <span id="summaryAmount" class="summary-value">Rp 0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Metode Pembayaran:</span>
+                        <span id="summaryMethod" class="summary-value">Belum dipilih</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total:</span>
+                        <span id="summaryTotal" class="summary-value">Rp 0</span>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="game-btn" id="depositSubmitBtn" onclick="processDeposit()" disabled>
+                        💳 Proses Deposit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer"></div>
+
+    <script src="main.js"></script>
+</body>
+</html>

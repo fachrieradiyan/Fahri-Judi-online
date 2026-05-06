@@ -1,0 +1,1396 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --member-color: #4a90e2;
+    --vip-color: #ffd700;
+    --staff-color: #00d4ff;
+    --admin-color: #ff6b6b;
+    --developer-color: #9b59b6;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #16213e 100%);
+    color: #fff;
+    min-height: 100vh;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+/* Screen Management */
+.screen {
+    display: none;
+}
+
+.screen.active {
+    display: block;
+}
+
+/* Login Screen */
+#loginScreen {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    padding: 20px;
+}
+
+#loginScreen.active {
+    display: flex;
+}
+
+.login-container {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    border-radius: 20px;
+    padding: 40px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 0 50px rgba(255, 215, 0, 0.2);
+}
+
+.logo-section {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo {
+    font-size: 3em;
+    background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+}
+
+.tagline {
+    color: #aaa;
+    font-size: 0.9em;
+}
+
+.auth-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid transparent;
+    border-radius: 10px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 1em;
+}
+
+.tab-btn.active {
+    background: rgba(255, 215, 0, 0.2);
+    border-color: #ffd700;
+}
+
+.auth-form {
+    display: none;
+}
+
+.auth-form.active {
+    display: block;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #ffd700;
+    font-size: 0.9em;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1em;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #ffd700;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+    border: none;
+    border-radius: 10px;
+    color: #000;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(255, 215, 0, 0.5);
+}
+
+/* Demo Accounts */
+.demo-accounts {
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 2px solid rgba(255, 215, 0, 0.2);
+}
+
+.demo-accounts h4 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #ffd700;
+}
+
+.demo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+}
+
+.demo-btn {
+    padding: 15px 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.demo-btn small {
+    color: #aaa;
+    font-size: 0.75em;
+}
+
+.demo-btn.member {
+    border-color: var(--member-color);
+}
+
+.demo-btn.vip {
+    border-color: var(--vip-color);
+}
+
+.demo-btn.staff {
+    border-color: var(--staff-color);
+}
+
+.demo-btn.admin {
+    border-color: var(--admin-color);
+}
+
+.demo-btn.developer {
+    border-color: var(--developer-color);
+}
+
+.demo-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+}
+
+/* Role Badges */
+.role-badge {
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.75em;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.role-badge.member {
+    background: var(--member-color);
+    color: #fff;
+}
+
+.role-badge.vip {
+    background: var(--vip-color);
+    color: #000;
+}
+
+.role-badge.staff {
+    background: var(--staff-color);
+    color: #000;
+}
+
+.role-badge.admin {
+    background: var(--admin-color);
+    color: #fff;
+}
+
+.role-badge.developer {
+    background: var(--developer-color);
+    color: #fff;
+}
+
+/* Main Header */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    background: rgba(0, 0, 0, 0.5);
+    border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.mobile-menu-btn {
+    display: none;
+    background: rgba(255, 215, 0, 0.2);
+    border: 2px solid #ffd700;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1.5em;
+    width: 45px;
+    height: 45px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.mobile-menu-btn:hover {
+    background: rgba(255, 215, 0, 0.3);
+}
+
+.header-left .logo {
+    font-size: 1.8em;
+    margin: 0;
+}
+
+.balance-display {
+    background: rgba(255, 215, 0, 0.1);
+    padding: 10px 25px;
+    border-radius: 25px;
+    border: 2px solid #ffd700;
+}
+
+.balance-label {
+    color: #ffd700;
+    margin-right: 10px;
+}
+
+.balance-amount {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #fff;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.btn-claim {
+    padding: 10px 20px;
+    background: linear-gradient(45deg, #00ff88, #00cc6a);
+    border: none;
+    border-radius: 20px;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.9em;
+}
+
+.btn-claim:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+}
+
+.btn-reset {
+    padding: 10px 20px;
+    background: linear-gradient(45deg, #ff9500, #ffb84d);
+    border: none;
+    border-radius: 20px;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.9em;
+}
+
+.btn-reset:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 149, 0, 0.5);
+}
+
+.btn-deposit {
+    padding: 10px 20px;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    border: none;
+    border-radius: 20px;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.9em;
+}
+
+.btn-deposit:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+}
+
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+}
+
+.btn-logout {
+    padding: 8px 15px;
+    background: rgba(255, 0, 0, 0.2);
+    border: 1px solid #ff4444;
+    border-radius: 15px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.9em;
+}
+
+/* Navigation */
+.main-nav {
+    display: flex;
+    gap: 10px;
+    padding: 15px 30px;
+    background: rgba(0, 0, 0, 0.3);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.main-nav::-webkit-scrollbar {
+    height: 6px;
+}
+
+.main-nav::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.main-nav::-webkit-scrollbar-thumb {
+    background: rgba(255, 215, 0, 0.5);
+    border-radius: 3px;
+}
+
+.nav-btn {
+    padding: 12px 25px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid transparent;
+    border-radius: 10px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+    font-size: 0.95em;
+}
+
+.nav-btn.active {
+    background: rgba(255, 215, 0, 0.2);
+    border-color: #ffd700;
+}
+
+.nav-btn:hover {
+    background: rgba(255, 215, 0, 0.1);
+}
+
+/* Content Sections */
+.content-section {
+    display: none;
+    padding: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.content-section.active {
+    display: block;
+}
+
+/* Banner */
+.banner-slider {
+    margin-bottom: 40px;
+}
+
+.banner {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 60px 40px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+}
+
+.banner h2 {
+    font-size: 2.5em;
+    margin-bottom: 15px;
+}
+
+/* Role Benefits */
+.role-benefits {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 40px;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+}
+
+.role-benefits h4 {
+    margin-bottom: 15px;
+    color: #ffd700;
+}
+
+.role-benefits ul {
+    list-style: none;
+    padding: 0;
+}
+
+.role-benefits li {
+    padding: 8px 0;
+    padding-left: 25px;
+    position: relative;
+}
+
+.role-benefits li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #00ff88;
+    font-weight: bold;
+}
+
+/* Game Categories */
+.game-categories h3 {
+    font-size: 1.8em;
+    margin-bottom: 25px;
+    color: #ffd700;
+}
+
+.game-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.game-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    border-radius: 15px;
+    padding: 30px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.game-card:hover {
+    transform: translateY(-10px);
+    border-color: #ffd700;
+    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+}
+
+.game-icon {
+    font-size: 4em;
+    margin-bottom: 15px;
+}
+
+.game-card h4 {
+    font-size: 1.3em;
+    margin-bottom: 10px;
+}
+
+.game-card p {
+    color: #aaa;
+    font-size: 0.9em;
+}
+
+/* Stats Cards */
+.stats-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    border-radius: 15px;
+    padding: 25px;
+    text-align: center;
+}
+
+.stat-card h4 {
+    color: #ffd700;
+    margin-bottom: 15px;
+}
+
+.stat-value {
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.stat-value.green {
+    color: #00ff88;
+}
+
+.stat-value.red {
+    color: #ff4444;
+}
+
+/* History List */
+.history-list {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 20px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.history-item.win {
+    border-left: 4px solid #00ff88;
+}
+
+.history-item.loss {
+    border-left: 4px solid #ff4444;
+}
+
+.empty-state {
+    text-align: center;
+    color: #666;
+    padding: 40px;
+}
+
+/* Leaderboard */
+.leaderboard-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.leaderboard-list {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 20px;
+}
+
+.leaderboard-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.rank {
+    font-size: 1.5em;
+    font-weight: bold;
+    min-width: 40px;
+}
+
+.rank.gold {
+    color: #ffd700;
+}
+
+.rank.silver {
+    color: #c0c0c0;
+}
+
+.rank.bronze {
+    color: #cd7f32;
+}
+
+/* Admin Panel */
+.admin-panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.admin-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 107, 107, 0.5);
+    border-radius: 15px;
+    padding: 25px;
+    text-align: center;
+}
+
+.admin-card h4 {
+    color: #ff6b6b;
+    margin-bottom: 15px;
+}
+
+.admin-stat {
+    font-size: 2em;
+    font-weight: bold;
+    color: #fff;
+}
+
+.admin-users {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 20px;
+}
+
+.admin-users h4 {
+    margin-bottom: 20px;
+    color: #ffd700;
+}
+
+.admin-user-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* Game Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.modal.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border: 2px solid #ffd700;
+    border-radius: 20px;
+    padding: 30px;
+    width: 100%;
+    max-width: 900px;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(255, 0, 0, 0.3);
+    border: 2px solid #ff4444;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    color: #fff;
+    font-size: 1.5em;
+    cursor: pointer;
+    transition: all 0.3s;
+    z-index: 10;
+}
+
+.close-btn:hover {
+    background: rgba(255, 0, 0, 0.5);
+    transform: rotate(90deg);
+}
+
+/* Game Container Styles */
+#gameContainer {
+    min-height: 400px;
+}
+
+.game-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.game-title {
+    font-size: 2.5em;
+    color: #ffd700;
+    margin-bottom: 10px;
+}
+
+.bet-section {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+}
+
+.bet-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.bet-input {
+    padding: 12px 20px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid #ffd700;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 1.1em;
+    width: 150px;
+    text-align: center;
+}
+
+.bet-presets {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.preset-btn {
+    padding: 8px 15px;
+    background: rgba(255, 215, 0, 0.2);
+    border: 1px solid #ffd700;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.9em;
+}
+
+.preset-btn:hover {
+    background: rgba(255, 215, 0, 0.3);
+}
+
+.game-btn {
+    padding: 15px 40px;
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+    border: none;
+    border-radius: 25px;
+    color: #000;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.game-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 25px rgba(255, 215, 0, 0.5);
+}
+
+.game-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.result-message {
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+    margin: 20px 0;
+    min-height: 40px;
+}
+
+.result-message.win {
+    color: #00ff88;
+}
+
+.result-message.loss {
+    color: #ff4444;
+}
+
+/* Notification */
+#notificationContainer {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2000;
+    max-width: 350px;
+}
+
+.notification {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    padding: 15px 25px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    animation: slideIn 0.3s ease;
+    word-wrap: break-word;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .login-container {
+        padding: 25px;
+    }
+    
+    .logo {
+        font-size: 2.2em !important;
+    }
+    
+    .demo-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .mobile-menu-btn {
+        display: block;
+    }
+    
+    .main-header {
+        padding: 15px 20px;
+    }
+    
+    .header-left .logo {
+        font-size: 1.3em;
+    }
+    
+    .balance-display {
+        padding: 8px 15px;
+    }
+    
+    .balance-amount {
+        font-size: 1.1em;
+    }
+    
+    .btn-claim {
+        padding: 8px 12px;
+        font-size: 0.8em;
+    }
+    
+    .btn-reset {
+        padding: 8px 12px;
+        font-size: 0.8em;
+    }
+    
+    .header-right {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .user-info span {
+        font-size: 0.85em;
+    }
+    
+    .btn-logout {
+        padding: 6px 12px;
+        font-size: 0.8em;
+    }
+    
+    .main-nav {
+        padding: 10px 20px;
+        display: none;
+    }
+    
+    .main-nav.mobile-open {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .nav-btn {
+        width: 100%;
+        text-align: left;
+    }
+    
+    .content-section {
+        padding: 20px;
+    }
+    
+    .banner {
+        padding: 40px 25px;
+    }
+    
+    .banner h2 {
+        font-size: 1.8em;
+    }
+    
+    .game-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+    }
+    
+    .game-icon {
+        font-size: 3em;
+    }
+    
+    .game-card h4 {
+        font-size: 1.1em;
+    }
+    
+    .stats-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-content {
+        padding: 20px;
+        margin: 10px;
+    }
+    
+    .game-title {
+        font-size: 1.8em !important;
+    }
+    
+    .bet-input {
+        width: 120px;
+        font-size: 1em;
+    }
+    
+    .game-btn {
+        padding: 12px 30px;
+        font-size: 1em;
+    }
+    
+    #notificationContainer {
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+    
+    .history-item {
+        font-size: 0.9em;
+    }
+    
+    .leaderboard-item {
+        font-size: 0.9em;
+        gap: 10px;
+    }
+    
+    .admin-panel {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .demo-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .game-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .header-center {
+        order: 3;
+        width: 100%;
+    }
+    
+    .balance-display {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .game-icon {
+        font-size: 2.5em;
+    }
+    
+    .game-card {
+        padding: 20px 15px;
+    }
+}
+
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 215, 0, 0.5);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 215, 0, 0.7);
+}
+
+/* Loading Animation */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.loading {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Hover Effects */
+.game-card, .demo-btn, .btn-primary, .game-btn, .btn-claim {
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+/* Prevent text selection on buttons */
+button {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Better touch targets for mobile */
+@media (max-width: 768px) {
+    button, .game-card, .demo-btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}
+
+/* Fish Game Animation */
+@keyframes swim {
+    0%, 100% {
+        transform: translateX(0) translateY(0);
+    }
+    25% {
+        transform: translateX(20px) translateY(-10px);
+    }
+    50% {
+        transform: translateX(0) translateY(-20px);
+    }
+    75% {
+        transform: translateX(-20px) translateY(-10px);
+    }
+}
+
+.fish-target:hover {
+    transform: scale(1.2) !important;
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.8));
+}
+
+/* Mahjong Tile Animation */
+@keyframes tileFlip {
+    0% {
+        transform: rotateY(90deg) scale(0.5);
+        opacity: 0;
+    }
+    100% {
+        transform: rotateY(0deg) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes scatterDrop {
+    0% {
+        transform: translateY(-100px) scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: translateY(10px) scale(1.1);
+    }
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes scatterGlow {
+    0% {
+        transform: scale(0);
+        box-shadow: 0 0 0 rgba(255, 215, 0, 0);
+    }
+    50% {
+        transform: scale(1.2);
+        box-shadow: 0 0 30px rgba(255, 215, 0, 1);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    }
+}
+
+.mahjong-tile-scatter {
+    animation: scatterDrop 0.5s ease !important;
+}
+
+/* Deposit Modal Styles */
+.deposit-modal-content {
+    max-width: 800px;
+}
+
+.deposit-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.deposit-title {
+    font-size: 2.5em;
+    color: #ffd700;
+    margin-bottom: 10px;
+}
+
+.deposit-subtitle {
+    color: #aaa;
+    margin-bottom: 15px;
+}
+
+.deposit-notice {
+    background: rgba(255, 149, 0, 0.1);
+    border: 2px solid rgba(255, 149, 0, 0.5);
+    border-radius: 10px;
+    padding: 15px;
+    color: #ffb84d;
+    font-size: 0.9em;
+}
+
+.deposit-section {
+    margin-bottom: 30px;
+}
+
+.deposit-section h3 {
+    color: #ffd700;
+    margin-bottom: 20px;
+    font-size: 1.5em;
+}
+
+/* Amount Selection */
+.amount-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.amount-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    border-radius: 15px;
+    padding: 20px 15px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.amount-btn:hover {
+    border-color: #ffd700;
+    background: rgba(255, 215, 0, 0.1);
+    transform: translateY(-5px);
+}
+
+.amount-btn.selected {
+    border-color: #ffd700;
+    background: rgba(255, 215, 0, 0.2);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+.amount-value {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 5px;
+}
+
+.amount-label {
+    font-size: 0.85em;
+    color: #ffd700;
+}
+
+.custom-amount {
+    margin-top: 20px;
+}
+
+.custom-amount label {
+    display: block;
+    margin-bottom: 10px;
+    color: #aaa;
+}
+
+.amount-input {
+    width: 100%;
+    padding: 12px 20px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid #ffd700;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 1.1em;
+    text-align: center;
+}
+
+/* Payment Methods */
+.payment-category {
+    margin-bottom: 25px;
+}
+
+.payment-category h4 {
+    color: #00ff88;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+}
+
+.payment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+}
+
+.payment-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 15px 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.payment-btn:hover {
+    border-color: #00ff88;
+    background: rgba(0, 255, 136, 0.1);
+    transform: translateY(-3px);
+}
+
+.payment-btn.selected {
+    border-color: #00ff88;
+    background: rgba(0, 255, 136, 0.2);
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+}
+
+.payment-icon {
+    font-size: 2em;
+    margin-bottom: 8px;
+}
+
+.payment-name {
+    font-size: 0.9em;
+    color: #fff;
+    font-weight: bold;
+}
+
+/* Deposit Summary */
+.deposit-summary {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    border-radius: 15px;
+    padding: 20px;
+    margin-top: 30px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.summary-row:last-child {
+    border-bottom: none;
+}
+
+.summary-row.total {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #ffd700;
+    padding-top: 15px;
+    margin-top: 10px;
+    border-top: 2px solid rgba(255, 215, 0, 0.5);
+}
+
+.summary-value {
+    font-weight: bold;
+    color: #00ff88;
+}
+
+/* Responsive Deposit Modal */
+@media (max-width: 768px) {
+    .deposit-title {
+        font-size: 1.8em;
+    }
+    
+    .amount-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .payment-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .btn-deposit {
+        padding: 8px 12px;
+        font-size: 0.8em;
+    }
+}
