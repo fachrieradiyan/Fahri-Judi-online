@@ -3,87 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ERPEEL336 - Premium Online Casino</title>
-    <script>
-        // Redirect to login page
-        window.location.href = 'login.html';
-    </script>
+    <title>Dashboard - ERPEEL336 Casino</title>
+    <link rel="stylesheet" href="styles-new.css">
 </head>
 <body>
-    <p>Redirecting to login...</p>
-</body>
-</html>
-        <div class="login-container">
-            <div class="logo-section">
-                <h1 class="logo">ERPEEL336</h1>
-                <p class="tagline">Premium Online Casino</p>
-            </div>
-            
-            <div class="auth-tabs">
-                <button class="tab-btn active" onclick="switchTab('login')">Login</button>
-                <button class="tab-btn" onclick="switchTab('register')">Register</button>
-            </div>
-            
-            <!-- Login Form -->
-            <form id="loginForm" class="auth-form active">
-                <div class="form-group">
-                    <label>Username atau Email</label>
-                    <input type="text" id="loginUsername" placeholder="Masukkan username/email" required>
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" id="loginPassword" placeholder="Masukkan password" required>
-                </div>
-                <button type="submit" class="btn-primary">Masuk</button>
-            </form>
-            
-            <!-- Register Form -->
-            <form id="registerForm" class="auth-form">
-                <div class="form-group">
-                    <label>Username</label>
-                    <input type="text" id="regUsername" placeholder="Pilih username" required>
-                </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="regEmail" placeholder="email@example.com" required>
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" id="regPassword" placeholder="Minimal 6 karakter" required>
-                </div>
-                <button type="submit" class="btn-primary">Daftar</button>
-            </form>
-            
-            <div class="demo-accounts">
-                <h4>🎮 Akun Demo (Klik untuk login cepat)</h4>
-                <div class="demo-grid">
-                    <button class="demo-btn member" onclick="quickLogin('member')">
-                        <span class="role-badge member">👤 MEMBER</span>
-                        <small>member / 123456</small>
-                    </button>
-                    <button class="demo-btn vip" onclick="quickLogin('vip')">
-                        <span class="role-badge vip">⭐ VIP</span>
-                        <small>vip / 123456</small>
-                    </button>
-                    <button class="demo-btn staff" onclick="quickLogin('staff')">
-                        <span class="role-badge staff">🛡️ STAFF</span>
-                        <small>staff / 123456</small>
-                    </button>
-                    <button class="demo-btn admin" onclick="quickLogin('admin')">
-                        <span class="role-badge admin">👑 ADMIN</span>
-                        <small>admin / 123456</small>
-                    </button>
-                    <button class="demo-btn developer" onclick="quickLogin('developer')">
-                        <span class="role-badge developer">💻 DEVELOPER</span>
-                        <small>developer / 123456</small>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    
     <!-- Main Dashboard -->
-    <div id="dashboardScreen" class="screen">
+    <div class="dashboard-screen">
         <!-- Header -->
         <header class="main-header">
             <div class="header-left">
@@ -324,7 +252,9 @@
 
         <!-- History Section -->
         <section id="historySection" class="content-section">
-            <h3>📊 Riwayat Permainan</h3>
+            <h3>📊 Riwayat Permainan & Transaksi</h3>
+            
+            <!-- Summary Cards -->
             <div class="stats-cards">
                 <div class="stat-card">
                     <h4>Total Permainan</h4>
@@ -338,9 +268,24 @@
                     <h4>Total Kalah</h4>
                     <p class="stat-value red" id="totalLosses">Rp 0</p>
                 </div>
+                <div class="stat-card">
+                    <h4>Keuntungan/Kerugian</h4>
+                    <p class="stat-value" id="netProfit">Rp 0</p>
+                </div>
             </div>
+            
+            <!-- Filter Tabs -->
+            <div class="history-tabs" style="margin: 20px 0;">
+                <button class="tab-btn active" onclick="filterHistory('all')">Semua</button>
+                <button class="tab-btn" onclick="filterHistory('game')">Game</button>
+                <button class="tab-btn" onclick="filterHistory('deposit')">Deposit</button>
+                <button class="tab-btn" onclick="filterHistory('claim')">Klaim</button>
+                <button class="tab-btn" onclick="filterHistory('reset')">Reset</button>
+            </div>
+            
+            <!-- History List -->
             <div class="history-list" id="historyList">
-                <p class="empty-state">Belum ada riwayat permainan</p>
+                <p class="empty-state">Belum ada riwayat</p>
             </div>
         </section>
 
@@ -571,5 +516,15 @@
     <script src="main.js"></script>
     <script src="games-extra.js"></script>
     <script src="api-client.js"></script>
+    <script>
+        // Check if user is logged in
+        window.addEventListener('DOMContentLoaded', () => {
+            const currentUser = JSON.parse(localStorage.getItem('rupiahplay_currentUser') || 'null');
+            if (!currentUser) {
+                // Redirect to login if not logged in
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
 </body>
 </html>

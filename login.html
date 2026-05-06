@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ERPEEL336 Casino</title>
+    <link rel="stylesheet" href="styles-new.css">
+    <style>
+        /* Full screen login */
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        .login-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .login-container {
+            max-width: 500px;
+            width: 90%;
+            animation: fadeInUp 0.6s ease;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    
+    <!-- Login Screen -->
+    <div class="login-screen">
+        <div class="login-container">
+            <div class="logo-section">
+                <h1 class="logo">ERPEEL336</h1>
+                <p class="tagline">Premium Online Casino</p>
+            </div>
+            
+            <div class="auth-tabs">
+                <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+                <button class="tab-btn" onclick="switchTab('register')">Register</button>
+            </div>
+            
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form active">
+                <div class="form-group">
+                    <label>Username atau Email</label>
+                    <input type="text" id="loginUsername" placeholder="Masukkan username/email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Masukkan password" required>
+                </div>
+                <button type="submit" class="btn-primary">Masuk</button>
+            </form>
+            
+            <!-- Register Form -->
+            <form id="registerForm" class="auth-form">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="regUsername" placeholder="Pilih username" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" placeholder="email@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="regPassword" placeholder="Minimal 6 karakter" required>
+                </div>
+                <button type="submit" class="btn-primary">Daftar</button>
+            </form>
+            
+            <div class="demo-accounts">
+                <h4>🎮 Akun Demo (Klik untuk login cepat)</h4>
+                <div class="demo-grid">
+                    <button class="demo-btn member" onclick="quickLogin('member')">
+                        <span class="role-badge member">👤 MEMBER</span>
+                        <small>member / 123456</small>
+                    </button>
+                    <button class="demo-btn vip" onclick="quickLogin('vip')">
+                        <span class="role-badge vip">⭐ VIP</span>
+                        <small>vip / 123456</small>
+                    </button>
+                    <button class="demo-btn staff" onclick="quickLogin('staff')">
+                        <span class="role-badge staff">🛡️ STAFF</span>
+                        <small>staff / 123456</small>
+                    </button>
+                    <button class="demo-btn admin" onclick="quickLogin('admin')">
+                        <span class="role-badge admin">👑 ADMIN</span>
+                        <small>admin / 123456</small>
+                    </button>
+                    <button class="demo-btn developer" onclick="quickLogin('developer')">
+                        <span class="role-badge developer">💻 DEVELOPER</span>
+                        <small>developer / 123456</small>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer"></div>
+
+    <script src="auth.js"></script>
+</body>
+</html>

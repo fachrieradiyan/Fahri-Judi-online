@@ -81,6 +81,7 @@ const DEMO_ACCOUNTS = {
 let currentUser = null;
 let balance = 100000;
 let gameHistory = [];
+let transactionHistory = []; // New: Track all balance changes
 let isPlaying = false;
 
 // ===== INITIALIZATION =====
@@ -116,130 +117,28 @@ function initializeDemoAccounts() {
 }
 
 function setupEventListeners() {
-    document.getElementById('loginForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        handleLogin();
-    });
-    
-    document.getElementById('registerForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        handleRegister();
-    });
+    // Event listeners for dashboard can be added here if needed
 }
 
-// ===== AUTH FUNCTIONS =====
-function switchTab(tab) {
-    const tabs = document.querySelectorAll('.auth-tabs .tab-btn');
-    const forms = document.querySelectorAll('.auth-form');
-    
-    tabs.forEach(t => t.classList.remove('active'));
-    forms.forEach(f => f.classList.remove('active'));
-    
-    if (tab === 'login') {
-        tabs[0].classList.add('active');
-        document.getElementById('loginForm').classList.add('active');
-    } else {
-        tabs[1].classList.add('active');
-        document.getElementById('registerForm').classList.add('active');
-    }
-}
-
-function quickLogin(role) {
-    const account = DEMO_ACCOUNTS[role];
-    document.getElementById('loginUsername').value = account.username;
-    document.getElementById('loginPassword').value = account.password;
-    handleLogin();
-}
-
-function handleLogin() {
-    const username = document.getElementById('loginUsername').value;
-    const password = document.getElementById('loginPassword').value;
-    
-    if (!username || !password) {
-        showNotification('❌ Mohon isi semua field', 'error');
-        return;
-    }
-    
-    const users = JSON.parse(localStorage.getItem('rupiahplay_users') || '{}');
-    
-    if (users[username] && users[username].password === password) {
-        currentUser = users[username];
-        balance = currentUser.balance || ROLES[currentUser.role].startBalance;
-        gameHistory = currentUser.history || [];
-        showNotification(`✅ Selamat datang, ${ROLES[currentUser.role].icon} ${currentUser.username}!`, 'success');
-        showDashboard();
-    } else {
-        showNotification('❌ Username atau password salah', 'error');
-    }
-}
-
-function handleRegister() {
-    const username = document.getElementById('regUsername').value;
-    const email = document.getElementById('regEmail').value;
-    const password = document.getElementById('regPassword').value;
-    
-    if (!username || !email || !password) {
-        showNotification('❌ Mohon isi semua field', 'error');
-        return;
-    }
-    
-    if (password.length < 6) {
-        showNotification('❌ Password minimal 6 karakter', 'error');
-        return;
-    }
-    
-    const users = JSON.parse(localStorage.getItem('rupiahplay_users') || '{}');
-    
-    if (users[username]) {
-        showNotification('❌ Username sudah digunakan', 'error');
-        return;
-    }
-    
-    users[username] = {
-        username,
-        email,
-        password,
-        role: 'member',
-        balance: ROLES.member.startBalance,
-        lastClaim: null,
-        history: [],
-        createdAt: new Date().toISOString()
-    };
-    
-    localStorage.setItem('rupiahplay_users', JSON.stringify(users));
-    
-    currentUser = users[username];
-    balance = ROLES.member.startBalance;
-    gameHistory = [];
-    
-    showNotification('✅ Registrasi berhasil!', 'success');
-    showDashboard();
-}
-
+// ===== LOGOUT FUNCTION =====
 function logout() {
     saveUserData();
     currentUser = null;
     balance = 100000;
     gameHistory = [];
     
-    // Hide dashboard
-    document.getElementById('dashboardScreen').classList.remove('active');
+    // Clear current user from localStorage
+    localStorage.removeItem('rupiahplay_currentUser');
     
-    // Show login screen
-    document.getElementById('loginScreen').classList.add('active');
+    // Show notification
+    showNotification('✅ Logout berhasil!', 'success');
     
-    // Scroll to top
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    // Smooth transition
+    document.body.style.animation = 'fadeOut 0.5s ease';
     
-    // Close mobile menu if open
-    const nav = document.getElementById('mainNav');
-    if (nav) nav.classList.remove('mobile-open');
-    
-    // Reset forms
-    document.getElementById('loginUsername').value = '';
-    document.getElementById('loginPassword').value = '';
-    
-    showNotification('👋 Logout berhasil', 'success');
+    setTimeout(() => {
+        window.location.href = 'login.html';
+    }, 500);
 }
 
 // ===== DATA PERSISTENCE =====
@@ -250,7 +149,8 @@ function saveUserData() {
     users[currentUser.username] = {
         ...currentUser,
         balance,
-        history: gameHistory
+        history: gameHistory,
+        transactions: transactionHistory
     };
     localStorage.setItem('rupiahplay_users', JSON.stringify(users));
 }
@@ -263,21 +163,14 @@ function loadUserData() {
             currentUser = users[lastUser];
             balance = currentUser.balance || ROLES[currentUser.role].startBalance;
             gameHistory = currentUser.history || [];
+            transactionHistory = currentUser.transactions || [];
         }
     }
 }
 
 // ===== DASHBOARD FUNCTIONS =====
 function showDashboard() {
-    // Hide login screen
-    document.getElementById('loginScreen').classList.remove('active');
-    
-    // Show dashboard screen
-    document.getElementById('dashboardScreen').classList.add('active');
-    
-    // Scroll to top
-    window.scrollTo({ top: 0, behavior: 'instant' });
-    
+    // Dashboard is already loaded, just update the UI
     const role = currentUser.role || 'member';
     const roleConfig = ROLES[role];
     
@@ -298,7 +191,6 @@ function showDashboard() {
     
     localStorage.setItem('rupiahplay_lastUser', currentUser.username);
 }
-
 function updateRoleBenefits() {
     const role = currentUser.role || 'member';
     const roleConfig = ROLES[role];
@@ -370,6 +262,10 @@ function claimDaily() {
     
     balance += claimAmount;
     currentUser.lastClaim = now.toISOString();
+    
+    // Record transaction
+    addTransaction('claim', claimAmount, `Klaim harian ${ROLES[role].name}`);
+    
     updateBalance();
     showNotification(`🎁 Klaim harian berhasil! +${formatRupiah(claimAmount)}`, 'success');
 }
@@ -380,12 +276,18 @@ function resetBalance() {
     
     const role = currentUser.role || 'member';
     const startBalance = ROLES[role].startBalance;
+    const oldBalance = balance;
     
     // Konfirmasi
     const confirmed = confirm(`🔄 Reset saldo ke ${formatRupiah(startBalance)}?\n\nSaldo saat ini: ${formatRupiah(balance)}\nRiwayat permainan akan tetap tersimpan.`);
     
     if (confirmed) {
+        const difference = startBalance - oldBalance;
         balance = startBalance;
+        
+        // Record transaction
+        addTransaction('reset', difference, `Reset saldo ke ${formatRupiah(startBalance)}`);
+        
         updateBalance();
         showNotification(`✅ Saldo berhasil direset ke ${formatRupiah(startBalance)}!`, 'success');
     }
@@ -524,6 +426,16 @@ function processDeposit() {
     setTimeout(() => {
         // Add balance
         balance += selectedDepositAmount;
+        
+        // Record transaction
+        const methodNames = {
+            'gopay': 'GoPay', 'ovo': 'OVO', 'dana': 'DANA', 'shopeepay': 'ShopeePay',
+            'bca': 'BCA', 'mandiri': 'Mandiri', 'bni': 'BNI', 'bri': 'BRI',
+            'va-bca': 'VA BCA', 'va-mandiri': 'VA Mandiri', 'va-bni': 'VA BNI', 'va-permata': 'VA Permata',
+            'alfamart': 'Alfamart', 'indomaret': 'Indomaret', 'qris': 'QRIS'
+        };
+        addTransaction('deposit', selectedDepositAmount, `Deposit via ${methodNames[selectedPaymentMethod]}`);
+        
         updateBalance();
         
         // Show success notification
@@ -541,6 +453,24 @@ function processDeposit() {
     }, 2000);
 }
 
+// ===== TRANSACTION TRACKING =====
+function addTransaction(type, amount, description, relatedGame = null) {
+    const transaction = {
+        type, // 'game_win', 'game_loss', 'deposit', 'claim', 'reset'
+        amount,
+        description,
+        relatedGame,
+        balanceBefore: balance - amount,
+        balanceAfter: balance,
+        timestamp: new Date().toISOString()
+    };
+    
+    transactionHistory.unshift(transaction);
+    if (transactionHistory.length > 200) transactionHistory.pop();
+    
+    saveUserData();
+}
+
 // ===== GAME HISTORY =====
 function addToHistory(game, bet, result, winAmount) {
     const historyItem = {
@@ -554,48 +484,140 @@ function addToHistory(game, bet, result, winAmount) {
     gameHistory.unshift(historyItem);
     if (gameHistory.length > 100) gameHistory.pop();
     
+    // Add transaction record (balance already updated in game functions)
+    if (result === 'win') {
+        addTransaction('game_win', winAmount, `Menang ${game}`, game);
+    } else {
+        addTransaction('game_loss', -bet, `Kalah ${game}`, game);
+    }
+    
     updateHistory();
-    saveUserData();
+}
+
+let currentHistoryFilter = 'all';
+
+function filterHistory(filter) {
+    currentHistoryFilter = filter;
+    
+    // Update tab buttons
+    const tabs = document.querySelectorAll('.history-tabs .tab-btn');
+    tabs.forEach(tab => tab.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    updateHistory();
 }
 
 function updateHistory() {
     const historyList = document.getElementById('historyList');
     
-    if (gameHistory.length === 0) {
-        historyList.innerHTML = '<p class="empty-state">Belum ada riwayat permainan</p>';
+    // Combine game history and transactions
+    let allTransactions = [...transactionHistory];
+    
+    // Filter based on selected tab
+    if (currentHistoryFilter !== 'all') {
+        allTransactions = allTransactions.filter(t => {
+            if (currentHistoryFilter === 'game') return t.type.startsWith('game_');
+            if (currentHistoryFilter === 'deposit') return t.type === 'deposit';
+            if (currentHistoryFilter === 'claim') return t.type === 'claim';
+            if (currentHistoryFilter === 'reset') return t.type === 'reset';
+            return true;
+        });
+    }
+    
+    if (allTransactions.length === 0) {
+        historyList.innerHTML = '<p class="empty-state">Belum ada riwayat</p>';
         document.getElementById('totalGames').textContent = '0';
         document.getElementById('totalWins').textContent = 'Rp 0';
         document.getElementById('totalLosses').textContent = 'Rp 0';
+        document.getElementById('netProfit').textContent = 'Rp 0';
         return;
     }
     
+    // Calculate statistics
     let totalWins = 0;
     let totalLosses = 0;
+    let totalGames = 0;
     
-    historyList.innerHTML = gameHistory.slice(0, 20).map(item => {
-        const isWin = item.result === 'win';
-        if (isWin) totalWins += item.winAmount;
-        else totalLosses += item.bet;
+    transactionHistory.forEach(t => {
+        if (t.type === 'game_win') {
+            totalWins += t.amount;
+            totalGames++;
+        } else if (t.type === 'game_loss') {
+            totalLosses += Math.abs(t.amount);
+            totalGames++;
+        }
+    });
+    
+    const netProfit = totalWins - totalLosses;
+    
+    // Display transactions
+    historyList.innerHTML = allTransactions.slice(0, 50).map(t => {
+        let icon = '';
+        let typeLabel = '';
+        let colorClass = '';
+        let amountDisplay = '';
+        
+        switch(t.type) {
+            case 'game_win':
+                icon = '🎉';
+                typeLabel = 'Menang';
+                colorClass = 'win';
+                amountDisplay = `+${formatRupiah(t.amount)}`;
+                break;
+            case 'game_loss':
+                icon = '😢';
+                typeLabel = 'Kalah';
+                colorClass = 'loss';
+                amountDisplay = formatRupiah(Math.abs(t.amount));
+                break;
+            case 'deposit':
+                icon = '💳';
+                typeLabel = 'Deposit';
+                colorClass = 'deposit';
+                amountDisplay = `+${formatRupiah(t.amount)}`;
+                break;
+            case 'claim':
+                icon = '🎁';
+                typeLabel = 'Klaim Harian';
+                colorClass = 'claim';
+                amountDisplay = `+${formatRupiah(t.amount)}`;
+                break;
+            case 'reset':
+                icon = '🔄';
+                typeLabel = 'Reset Saldo';
+                colorClass = 'reset';
+                amountDisplay = formatRupiah(t.amount);
+                break;
+        }
         
         return `
-            <div class="history-item ${isWin ? 'win' : 'loss'}">
-                <div>
-                    <strong>${item.game}</strong><br>
-                    <small>${new Date(item.timestamp).toLocaleString('id-ID')}</small>
+            <div class="history-item ${colorClass}">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.5em;">${icon}</span>
+                    <div>
+                        <strong>${typeLabel}</strong>
+                        ${t.relatedGame ? `<br><small>${t.relatedGame}</small>` : ''}
+                        <br><small>${new Date(t.timestamp).toLocaleString('id-ID')}</small>
+                    </div>
                 </div>
                 <div style="text-align: right;">
-                    <div>Taruhan: ${formatRupiah(item.bet)}</div>
-                    <div style="color: ${isWin ? '#00ff88' : '#ff4444'}">
-                        ${isWin ? '+' : '-'}${formatRupiah(isWin ? item.winAmount : item.bet)}
+                    <div style="font-size: 1.2em; font-weight: bold; color: ${t.amount >= 0 ? '#00ff88' : '#ff4444'}">
+                        ${amountDisplay}
                     </div>
+                    <small style="color: #aaa;">Saldo: ${formatRupiah(t.balanceAfter)}</small>
                 </div>
             </div>
         `;
     }).join('');
     
-    document.getElementById('totalGames').textContent = gameHistory.length;
+    // Update statistics
+    document.getElementById('totalGames').textContent = totalGames;
     document.getElementById('totalWins').textContent = formatRupiah(totalWins);
     document.getElementById('totalLosses').textContent = formatRupiah(totalLosses);
+    
+    const netProfitEl = document.getElementById('netProfit');
+    netProfitEl.textContent = (netProfit >= 0 ? '+' : '') + formatRupiah(netProfit);
+    netProfitEl.style.color = netProfit >= 0 ? '#00ff88' : '#ff4444';
 }
 
 // ===== LEADERBOARD =====
@@ -811,6 +833,41 @@ function loadSlotGame(container) {
             <h2 class="game-title">🎰 Slot Machine</h2>
         </div>
         
+        <style>
+            @keyframes slotSpin {
+                0% { transform: translateY(0) scale(1); }
+                25% { transform: translateY(-10px) scale(1.1); }
+                50% { transform: translateY(0) scale(1); }
+                75% { transform: translateY(10px) scale(0.9); }
+                100% { transform: translateY(0) scale(1); }
+            }
+            
+            .slot-reel {
+                transition: all 0.3s ease;
+            }
+            
+            .slot-reel.spinning {
+                animation: slotSpin 0.1s linear infinite;
+                filter: blur(3px);
+            }
+            
+            .slot-reel.stopped {
+                animation: none;
+                filter: blur(0);
+                transform: scale(1.2);
+            }
+            
+            @keyframes slotWin {
+                0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+                50% { transform: scale(1.15); box-shadow: 0 0 40px rgba(255, 215, 0, 1); }
+            }
+            
+            .slot-reel.winning {
+                animation: slotWin 0.5s ease-in-out infinite;
+                border-color: #ffd700 !important;
+            }
+        </style>
+        
         <div style="display: flex; justify-content: center; gap: 15px; margin: 30px 0; flex-wrap: wrap;">
             <div class="slot-reel" style="width: 100px; height: 100px; background: rgba(0,0,0,0.5); border: 3px solid #ffd700; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 4em;">🍒</div>
             <div class="slot-reel" style="width: 100px; height: 100px; background: rgba(0,0,0,0.5); border: 3px solid #ffd700; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 4em;">🍋</div>
@@ -862,6 +919,12 @@ function spinSlot() {
     resultDiv.textContent = '🎰 Spinning...';
     resultDiv.className = 'result-message';
     
+    // Add spinning animation to all reels
+    reels.forEach(reel => {
+        reel.classList.add('spinning');
+        reel.classList.remove('stopped', 'winning');
+    });
+    
     let spins = 0;
     const maxSpins = 20;
     
@@ -874,7 +937,22 @@ function spinSlot() {
         
         if (spins >= maxSpins) {
             clearInterval(interval);
-            checkSlotResult(reels[0].textContent, reels[1].textContent, reels[2].textContent, bet);
+            
+            // Stop reels one by one with delay for dramatic effect
+            reels.forEach((reel, index) => {
+                setTimeout(() => {
+                    reel.classList.remove('spinning');
+                    reel.classList.add('stopped');
+                    
+                    // After last reel stops, check result
+                    if (index === reels.length - 1) {
+                        setTimeout(() => {
+                            reels.forEach(r => r.classList.remove('stopped'));
+                            checkSlotResult(reels[0].textContent, reels[1].textContent, reels[2].textContent, bet);
+                        }, 300);
+                    }
+                }, index * 200);
+            });
         }
     }, 100);
 }
@@ -884,6 +962,8 @@ function checkSlotResult(s1, s2, s3, bet) {
     let message = '';
     let result = 'loss';
     
+    const reels = document.querySelectorAll('.slot-reel');
+    
     if (s1 === s2 && s2 === s3) {
         result = 'win';
         if (s1 === '💎') winAmount = bet * 50;
@@ -891,10 +971,25 @@ function checkSlotResult(s1, s2, s3, bet) {
         else if (s1 === '⭐') winAmount = bet * 20;
         else winAmount = bet * 10;
         message = '🎉 JACKPOT! 🎉';
+        
+        // Add winning animation to all reels
+        reels.forEach(reel => reel.classList.add('winning'));
     } else if (s1 === s2 || s2 === s3 || s1 === s3) {
         result = 'win';
         winAmount = bet * 2;
         message = '✨ Double Match! ✨';
+        
+        // Add winning animation to matching reels
+        if (s1 === s2) {
+            reels[0].classList.add('winning');
+            reels[1].classList.add('winning');
+        } else if (s2 === s3) {
+            reels[1].classList.add('winning');
+            reels[2].classList.add('winning');
+        } else {
+            reels[0].classList.add('winning');
+            reels[2].classList.add('winning');
+        }
     } else {
         message = '😢 Coba Lagi!';
     }
@@ -908,6 +1003,11 @@ function checkSlotResult(s1, s2, s3, bet) {
         resultDiv.textContent = `${message} Menang: ${formatRupiah(winAmount)}`;
         resultDiv.className = 'result-message win';
         addToHistory('Slot Machine', bet, 'win', winAmount);
+        
+        // Remove winning animation after 3 seconds
+        setTimeout(() => {
+            reels.forEach(reel => reel.classList.remove('winning'));
+        }, 3000);
     } else {
         resultDiv.textContent = message;
         resultDiv.className = 'result-message loss';
@@ -925,64 +1025,43 @@ function loadCrashGame(container) {
             <p>Terbang ke luar angkasa! Cash out sebelum meledak!</p>
         </div>
         
-        <div class="space-container" style="position: relative; background: linear-gradient(180deg, #000428 0%, #004e92 100%); border-radius: 20px; padding: 40px 20px; margin: 20px 0; overflow: hidden; min-height: 350px;">
-            <!-- Stars Background -->
-            <div class="space-stars" id="spaceStars"></div>
+        <div class="space-container" id="spaceContainer" style="position: relative; background: linear-gradient(180deg, #000428 0%, #004e92 100%); border-radius: 20px; padding: 40px 20px; margin: 20px 0; overflow: hidden; min-height: 400px;">
+            <!-- Animated Space Background -->
+            <div class="space-background" id="spaceBackground" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;">
+                <!-- Moving Stars Layers -->
+                <div class="stars-layer stars-layer-1" id="starsLayer1"></div>
+                <div class="stars-layer stars-layer-2" id="starsLayer2"></div>
+                <div class="stars-layer stars-layer-3" id="starsLayer3"></div>
+            </div>
             
-            <!-- Planets -->
-            <div style="position: absolute; top: 20px; right: 30px; font-size: 3em; opacity: 0.6; animation: float 6s ease-in-out infinite;">🪐</div>
-            <div style="position: absolute; bottom: 30px; left: 40px; font-size: 2em; opacity: 0.5; animation: float 8s ease-in-out infinite;">🌙</div>
+            <!-- Floating Planets -->
+            <div id="planet1" style="position: absolute; top: 20px; right: 30px; font-size: 3em; opacity: 0.6; z-index: 2; transition: all 0.3s;">🪐</div>
+            <div id="planet2" style="position: absolute; bottom: 30px; right: 60px; font-size: 2em; opacity: 0.5; z-index: 2; transition: all 0.3s;">🌙</div>
             
-            <!-- Astronaut Display -->
-            <div style="position: relative; z-index: 10; text-align: center;">
-                <div id="crashDisplay" style="font-size: 6em; margin: 20px 0; transition: all 0.3s; filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));">🧑‍🚀</div>
-                <div id="crashMultiplier" style="font-size: 4em; color: #00ff88; font-weight: bold; text-shadow: 0 0 20px rgba(0, 255, 136, 0.8), 0 0 40px rgba(0, 255, 136, 0.5);">1.00x</div>
-                <div id="crashStatus" style="font-size: 1.2em; color: #fff; margin-top: 10px; min-height: 30px;"></div>
+            <!-- Astronaut Display - Positioned to the left for flying right -->
+            <div style="position: relative; z-index: 10; display: flex; align-items: center; justify-content: flex-start; padding-left: 10%; min-height: 200px;">
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <div id="crashDisplay" style="font-size: 6em; margin: 20px 0; transition: all 0.3s; filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8)); display: inline-block;">🧑‍🚀</div>
+                    <div id="crashMultiplier" style="font-size: 4em; color: #00ff88; font-weight: bold; text-shadow: 0 0 20px rgba(0, 255, 136, 0.8), 0 0 40px rgba(0, 255, 136, 0.5); transition: all 0.2s;">1.00x</div>
+                    <div id="crashStatus" style="font-size: 1.2em; color: #fff; margin-top: 10px; min-height: 30px;"></div>
+                </div>
             </div>
             
             <!-- Shooting Stars -->
-            <div class="shooting-star" style="position: absolute; width: 2px; height: 2px; background: white; top: 20%; left: 80%; animation: shoot 3s linear infinite;"></div>
-            <div class="shooting-star" style="position: absolute; width: 2px; height: 2px; background: white; top: 60%; left: 20%; animation: shoot 4s linear infinite 1s;"></div>
+            <div class="shooting-stars-container" id="shootingStarsContainer"></div>
         </div>
         
         <style>
-            @keyframes float {
-                0%, 100% { transform: translateY(0px); }
-                50% { transform: translateY(-20px); }
+            .space-background {
+                background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
             }
             
-            @keyframes shoot {
-                0% {
-                    transform: translateX(0) translateY(0);
-                    opacity: 1;
-                }
-                100% {
-                    transform: translateX(-300px) translateY(300px);
-                    opacity: 0;
-                }
-            }
-            
-            @keyframes twinkle {
-                0%, 100% { opacity: 0.3; }
-                50% { opacity: 1; }
-            }
-            
-            @keyframes astronautFly {
-                0% { transform: translateY(0) rotate(-5deg); }
-                100% { transform: translateY(-30px) rotate(5deg); }
-            }
-            
-            .astronaut-flying {
-                animation: astronautFly 0.5s ease-in-out infinite alternate !important;
-            }
-            
-            .space-stars {
+            .stars-layer {
                 position: absolute;
                 top: 0;
                 left: 0;
                 width: 100%;
                 height: 100%;
-                z-index: 1;
             }
             
             .space-star {
@@ -991,7 +1070,120 @@ function loadCrashGame(container) {
                 height: 2px;
                 background: white;
                 border-radius: 50%;
-                animation: twinkle 3s ease-in-out infinite;
+                box-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
+            }
+            
+            /* Moving stars animation - horizontal movement */
+            @keyframes moveStars1 {
+                from { transform: translateX(0); }
+                to { transform: translateX(-100%); }
+            }
+            
+            @keyframes moveStars2 {
+                from { transform: translateX(0); }
+                to { transform: translateX(-100%); }
+            }
+            
+            @keyframes moveStars3 {
+                from { transform: translateX(0); }
+                to { transform: translateX(-100%); }
+            }
+            
+            .stars-layer-1 { animation: moveStars1 20s linear infinite; }
+            .stars-layer-2 { animation: moveStars2 15s linear infinite; }
+            .stars-layer-3 { animation: moveStars3 10s linear infinite; }
+            
+            /* Faster movement when flying */
+            .space-flying .stars-layer-1 { animation: moveStars1 5s linear infinite; }
+            .space-flying .stars-layer-2 { animation: moveStars2 3s linear infinite; }
+            .space-flying .stars-layer-3 { animation: moveStars3 2s linear infinite; }
+            
+            @keyframes astronautFly {
+                0% { 
+                    transform: translateX(0) translateY(0) rotate(-15deg) scale(1);
+                }
+                25% {
+                    transform: translateX(30px) translateY(-10px) rotate(-12deg) scale(1.05);
+                }
+                50% { 
+                    transform: translateX(60px) translateY(-5px) rotate(-15deg) scale(1.08);
+                }
+                75% {
+                    transform: translateX(30px) translateY(-10px) rotate(-18deg) scale(1.05);
+                }
+                100% { 
+                    transform: translateX(0) translateY(0) rotate(-15deg) scale(1);
+                }
+            }
+            
+            .astronaut-flying {
+                animation: astronautFly 2s ease-in-out infinite !important;
+                position: relative;
+            }
+            
+            /* Red cape/trail effect */
+            .astronaut-flying::after {
+                content: '';
+                position: absolute;
+                left: -20px;
+                top: 50%;
+                width: 40px;
+                height: 30px;
+                background: linear-gradient(90deg, rgba(255, 68, 68, 0.8), rgba(255, 68, 68, 0.4), transparent);
+                border-radius: 50% 0 0 50%;
+                transform: translateY(-50%) skewX(-20deg);
+                filter: blur(2px);
+                z-index: -1;
+                animation: capeWave 0.5s ease-in-out infinite;
+            }
+            
+            @keyframes capeWave {
+                0%, 100% { 
+                    width: 40px;
+                    opacity: 0.8;
+                }
+                50% { 
+                    width: 50px;
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes shootingStar {
+                0% {
+                    transform: translateX(0) translateY(0) rotate(15deg);
+                    opacity: 1;
+                }
+                100% {
+                    transform: translateX(-500px) translateY(100px) rotate(15deg);
+                    opacity: 0;
+                }
+            }
+            
+            .shooting-star {
+                position: absolute;
+                width: 80px;
+                height: 3px;
+                background: linear-gradient(to left, rgba(255, 255, 255, 1), transparent);
+                animation: shootingStar 1.5s linear;
+                z-index: 5;
+            }
+            
+            @keyframes planetFloat {
+                0%, 100% { transform: translateY(0) rotate(0deg); }
+                50% { transform: translateY(-20px) rotate(5deg); }
+            }
+            
+            .planet-floating {
+                animation: planetFloat 4s ease-in-out infinite;
+            }
+            
+            @keyframes multiplierPulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.1); }
+            }
+            
+            .multiplier-pulse {
+                animation: multiplierPulse 0.5s ease-in-out infinite;
             }
         </style>
         
@@ -1051,16 +1243,64 @@ function loadCrashGame(container) {
         </div>
     `;
     
-    // Create stars
-    const starsContainer = document.getElementById('spaceStars');
-    for (let i = 0; i < 50; i++) {
+    // Create stars in multiple layers
+    createStarLayers();
+    
+    // Add floating animation to planets
+    document.getElementById('planet1').classList.add('planet-floating');
+    document.getElementById('planet2').classList.add('planet-floating');
+}
+
+function createStarLayers() {
+    // Layer 1 - Slow moving, small stars
+    const layer1 = document.getElementById('starsLayer1');
+    for (let i = 0; i < 30; i++) {
         const star = document.createElement('div');
         star.className = 'space-star';
         star.style.left = Math.random() * 100 + '%';
         star.style.top = Math.random() * 100 + '%';
-        star.style.animationDelay = Math.random() * 3 + 's';
-        starsContainer.appendChild(star);
+        star.style.opacity = Math.random() * 0.5 + 0.3;
+        layer1.appendChild(star);
     }
+    
+    // Layer 2 - Medium speed, medium stars
+    const layer2 = document.getElementById('starsLayer2');
+    for (let i = 0; i < 20; i++) {
+        const star = document.createElement('div');
+        star.className = 'space-star';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.width = '3px';
+        star.style.height = '3px';
+        star.style.opacity = Math.random() * 0.7 + 0.3;
+        layer2.appendChild(star);
+    }
+    
+    // Layer 3 - Fast moving, large stars
+    const layer3 = document.getElementById('starsLayer3');
+    for (let i = 0; i < 15; i++) {
+        const star = document.createElement('div');
+        star.className = 'space-star';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.width = '4px';
+        star.style.height = '4px';
+        star.style.opacity = Math.random() * 0.9 + 0.5;
+        layer3.appendChild(star);
+    }
+}
+
+function createShootingStar() {
+    const container = document.getElementById('shootingStarsContainer');
+    if (!container) return;
+    
+    const star = document.createElement('div');
+    star.className = 'shooting-star';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 50 + '%';
+    container.appendChild(star);
+    
+    setTimeout(() => star.remove(), 2000);
 }
 
 let crashMultiplier = 1.0;
@@ -1129,10 +1369,16 @@ function startCrash() {
     const btn = document.getElementById('crashBtn');
     const rocket = document.getElementById('crashDisplay');
     const status = document.getElementById('crashStatus');
+    const spaceContainer = document.getElementById('spaceContainer');
+    const multiplierEl = document.getElementById('crashMultiplier');
+    
+    // Activate space flying animations
+    spaceContainer.classList.add('space-flying');
+    rocket.classList.add('astronaut-flying');
+    multiplierEl.classList.add('multiplier-pulse');
     
     btn.textContent = '💰 CASH OUT NOW!';
     btn.style.background = 'linear-gradient(45deg, #00ff88, #00cc6a)';
-    rocket.classList.add('rocket-flying');
     
     if (autoCashoutEnabled) {
         status.textContent = `🤖 Auto cashout at ${autoCashoutTarget.toFixed(2)}x`;
@@ -1144,9 +1390,15 @@ function startCrash() {
     
     document.getElementById('crashResult').textContent = '';
     
+    // Generate shooting stars periodically during flight
+    window.shootingStarInterval = setInterval(() => {
+        if (Math.random() > 0.7) { // 30% chance each interval
+            createShootingStar();
+        }
+    }, 500);
+    
     window.crashInterval = setInterval(() => {
         crashMultiplier += 0.05;
-        const multiplierEl = document.getElementById('crashMultiplier');
         multiplierEl.textContent = crashMultiplier.toFixed(2) + 'x';
         
         // Change color based on multiplier
@@ -1174,6 +1426,7 @@ function cashOut(isAuto = false) {
     if (!isPlaying) return;
     
     clearInterval(window.crashInterval);
+    clearInterval(window.shootingStarInterval);
     isPlaying = false;
     
     const bet = parseInt(document.getElementById('crashBet').value);
@@ -1185,8 +1438,14 @@ function cashOut(isAuto = false) {
     
     const rocket = document.getElementById('crashDisplay');
     const status = document.getElementById('crashStatus');
+    const spaceContainer = document.getElementById('spaceContainer');
+    const multiplierEl = document.getElementById('crashMultiplier');
     
-    rocket.classList.remove('rocket-flying');
+    // Stop flying animations
+    spaceContainer.classList.remove('space-flying');
+    rocket.classList.remove('astronaut-flying');
+    multiplierEl.classList.remove('multiplier-pulse');
+    
     rocket.textContent = '✅';
     
     if (isAuto) {
@@ -1210,19 +1469,26 @@ function cashOut(isAuto = false) {
     
     // Reset rocket after 2 seconds
     setTimeout(() => {
-        rocket.textContent = '🚀';
+        rocket.textContent = '🧑‍🚀';
         status.textContent = '';
     }, 2000);
 }
 
 function crashGame(bet) {
     clearInterval(window.crashInterval);
+    clearInterval(window.shootingStarInterval);
     isPlaying = false;
     
     const rocket = document.getElementById('crashDisplay');
     const status = document.getElementById('crashStatus');
+    const spaceContainer = document.getElementById('spaceContainer');
+    const multiplierEl = document.getElementById('crashMultiplier');
     
-    rocket.classList.remove('rocket-flying');
+    // Stop flying animations
+    spaceContainer.classList.remove('space-flying');
+    rocket.classList.remove('astronaut-flying');
+    multiplierEl.classList.remove('multiplier-pulse');
+    
     rocket.textContent = '💥';
     rocket.style.fontSize = '8em';
     status.textContent = `Crashed at ${crashMultiplier.toFixed(2)}x!`;
@@ -1237,7 +1503,7 @@ function crashGame(bet) {
     
     // Reset rocket after 2 seconds
     setTimeout(() => {
-        rocket.textContent = '🚀';
+        rocket.textContent = '🧑‍🚀';
         rocket.style.fontSize = '6em';
         status.textContent = '';
     }, 2000);
@@ -1249,6 +1515,17 @@ function loadRouletteGame(container) {
         <div class="game-header">
             <h2 class="game-title">🎡 Roulette</h2>
         </div>
+        
+        <style>
+            @keyframes rouletteGlow {
+                0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+                50% { box-shadow: 0 0 40px rgba(255, 215, 0, 1), 0 0 60px rgba(255, 215, 0, 0.8); }
+            }
+            
+            .roulette-spinning {
+                animation: rouletteGlow 0.5s ease-in-out infinite;
+            }
+        </style>
         
         <div style="text-align: center; margin: 30px 0;">
             <div id="rouletteWheel" style="width: 200px; height: 200px; margin: 0 auto; border-radius: 50%; background: conic-gradient(#ff0000 0deg 180deg, #000000 180deg 360deg); border: 5px solid #ffd700; position: relative; transition: transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99);">
@@ -1289,10 +1566,15 @@ function selectRouletteColor(color) {
     const spins = 5 + Math.random() * 3;
     const degrees = spins * 360 + Math.random() * 360;
     
+    // Add spinning glow effect
+    wheel.classList.add('roulette-spinning');
     wheel.style.transform = `rotate(${degrees}deg)`;
     document.getElementById('rouletteResult').textContent = '🎡 Spinning...';
     
     setTimeout(() => {
+        // Remove spinning effect
+        wheel.classList.remove('roulette-spinning');
+        
         const normalizedDegrees = degrees % 360;
         const resultColor = normalizedDegrees < 180 ? 'red' : 'black';
         const colorText = resultColor === 'red' ? '🔴 MERAH' : '⚫ HITAM';
@@ -1322,9 +1604,37 @@ function loadDiceGame(container) {
             <h2 class="game-title">🎲 Dice Roll</h2>
         </div>
         
+        <style>
+            @keyframes diceRoll {
+                0% { transform: rotate(0deg) scale(1); }
+                25% { transform: rotate(90deg) scale(1.1); }
+                50% { transform: rotate(180deg) scale(1); }
+                75% { transform: rotate(270deg) scale(1.1); }
+                100% { transform: rotate(360deg) scale(1); }
+            }
+            
+            .dice {
+                transition: all 0.3s ease;
+            }
+            
+            .dice-rolling {
+                animation: diceRoll 0.1s linear infinite;
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            }
+            
+            @keyframes diceWin {
+                0%, 100% { transform: scale(1); box-shadow: 0 0 10px rgba(0, 255, 136, 0.5); }
+                50% { transform: scale(1.2); box-shadow: 0 0 30px rgba(0, 255, 136, 1); }
+            }
+            
+            .dice-winning {
+                animation: diceWin 0.5s ease-in-out infinite;
+            }
+        </style>
+        
         <div style="display: flex; justify-content: center; gap: 20px; margin: 30px 0; flex-wrap: wrap;">
-            <div id="dice1" style="width: 80px; height: 80px; background: #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 3em; color: #000;">1</div>
-            <div id="dice2" style="width: 80px; height: 80px; background: #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 3em; color: #000;">1</div>
+            <div id="dice1" class="dice" style="width: 80px; height: 80px; background: #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 3em; color: #000;">1</div>
+            <div id="dice2" class="dice" style="width: 80px; height: 80px; background: #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 3em; color: #000;">1</div>
         </div>
         
         <div class="bet-section">
@@ -1359,6 +1669,10 @@ function rollDice() {
     const dice1 = document.getElementById('dice1');
     const dice2 = document.getElementById('dice2');
     
+    // Add rolling animation
+    dice1.classList.add('dice-rolling');
+    dice2.classList.add('dice-rolling');
+    
     let rolls = 0;
     const maxRolls = 15;
     
@@ -1370,11 +1684,25 @@ function rollDice() {
         
         if (rolls >= maxRolls) {
             clearInterval(interval);
+            
+            // Remove rolling animation
+            dice1.classList.remove('dice-rolling');
+            dice2.classList.remove('dice-rolling');
+            
             const d1 = Math.floor(Math.random() * 6) + 1;
             const d2 = Math.floor(Math.random() * 6) + 1;
             dice1.textContent = d1;
             dice2.textContent = d2;
-            checkDiceResult(d1, d2, bet);
+            
+            // Add scale effect when stopped
+            dice1.style.transform = 'scale(1.2)';
+            dice2.style.transform = 'scale(1.2)';
+            
+            setTimeout(() => {
+                dice1.style.transform = 'scale(1)';
+                dice2.style.transform = 'scale(1)';
+                checkDiceResult(d1, d2, bet);
+            }, 200);
         }
     }, 100);
 }
@@ -1384,16 +1712,29 @@ function checkDiceResult(d1, d2, bet) {
     let winAmount = 0;
     let message = '';
     
+    const dice1 = document.getElementById('dice1');
+    const dice2 = document.getElementById('dice2');
+    
     if (d1 === d2) {
         if (d1 === 6) winAmount = bet * 20;
         else winAmount = bet * 5;
         message = `🎲 DOUBLE ${d1}s! 🎲`;
+        
+        // Add winning animation to both dice
+        dice1.classList.add('dice-winning');
+        dice2.classList.add('dice-winning');
     } else if (total >= 10) {
         winAmount = bet * 3;
         message = `✨ HIGH ROLL (${total})! ✨`;
+        
+        dice1.classList.add('dice-winning');
+        dice2.classList.add('dice-winning');
     } else if (total === 7) {
         winAmount = bet * 2;
         message = '🍀 LUCKY 7! 🍀';
+        
+        dice1.classList.add('dice-winning');
+        dice2.classList.add('dice-winning');
     } else {
         message = `😢 Total: ${total} - Coba Lagi!`;
     }
@@ -1407,6 +1748,12 @@ function checkDiceResult(d1, d2, bet) {
         resultDiv.textContent = `${message} Menang: ${formatRupiah(winAmount)}`;
         resultDiv.className = 'result-message win';
         addToHistory('Dice Roll', bet, 'win', winAmount);
+        
+        // Remove winning animation after 3 seconds
+        setTimeout(() => {
+            dice1.classList.remove('dice-winning');
+            dice2.classList.remove('dice-winning');
+        }, 3000);
     } else {
         resultDiv.textContent = message;
         resultDiv.className = 'result-message loss';
