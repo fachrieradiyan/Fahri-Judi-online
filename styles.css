@@ -22,6 +22,11 @@ body {
     padding: 0;
 }
 
+body.login-active {
+    overflow: hidden;
+    height: 100vh;
+}
+
 /* Screen Management */
 .screen {
     display: none;

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test New Games - RupiahPlay</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        .game-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 40px auto;
+        }
+        .game-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.5);
+        }
+        .game-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+        h1 {
+            color: #ffd700;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 255, 136, 0.2);
+            border-radius: 10px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎮 Test New Games</h1>
+    <div class="status">
+        ✅ 5 Game Baru Berhasil Ditambahkan!
+    </div>
+    
+    <div class="game-list">
+        <div class="game-card" onclick="window.location.href='index.html'">
+            <div class="game-icon">🎲</div>
+            <h3>Sic Bo</h3>
+            <p>3 dadu, banyak taruhan</p>
+            <small>✅ READY</small>
+        </div>
+        
+        <div class="game-card" onclick="window.location.href='index.html'">
+            <div class="game-icon">🃏</div>
+            <h3>Video Poker</h3>
+            <p>Kombinasi kartu menang</p>
+            <small>✅ READY</small>
+        </div>
+        
+        <div class="game-card" onclick="window.location.href='index.html'">
+            <div class="game-icon">💣</div>
+            <h3>Mines</h3>
+            <p>Hindari bom, menang besar</p>
+            <small>✅ READY</small>
+        </div>
+        
+        <div class="game-card" onclick="window.location.href='index.html'">
+            <div class="game-icon">🎯</div>
+            <h3>Plinko</h3>
+            <p>Bola jatuh, multiplier</p>
+            <small>✅ READY</small>
+        </div>
+        
+        <div class="game-card" onclick="window.location.href='index.html'">
+            <div class="game-icon">🪙</div>
+            <h3>Coin Flip</h3>
+            <p>Head atau Tail?</p>
+            <small>✅ READY</small>
+        </div>
+    </div>
+    
+    <div style="margin-top: 40px;">
+        <a href="index.html" style="display: inline-block; padding: 15px 40px; background: linear-gradient(45deg, #ffd700, #ffed4e); color: #000; text-decoration: none; border-radius: 25px; font-weight: bold; font-size: 1.2em;">
+            🎮 BUKA GAME
+        </a>
+    </div>
+    
+    <div style="margin-top: 40px; padding: 20px; background: rgba(255, 255, 255, 0.05); border-radius: 15px; max-width: 800px; margin-left: auto; margin-right: auto;">
+        <h3 style="color: #00ff88;">📋 Fitur Baru:</h3>
+        <ul style="text-align: left; line-height: 2;">
+            <li>🎲 <strong>Sic Bo</strong> - Tebak hasil 3 dadu (Small/Big/Odd/Even/Triple)</li>
+            <li>🃏 <strong>Video Poker</strong> - Royal Flush hingga 250x!</li>
+            <li>💣 <strong>Mines</strong> - Pilih 3-10 bom, cashout kapan saja</li>
+            <li>🎯 <strong>Plinko</strong> - Bola jatuh dengan multiplier hingga 10x</li>
+            <li>🪙 <strong>Coin Flip</strong> - Simple 50/50, menang 2x</li>
+            <li>🀄 <strong>Mahjong Auto Spin</strong> - 10x, 25x, 50x, 100x!</li>
+        </ul>
+    </div>
+</body>
+</html>
